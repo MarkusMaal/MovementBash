@@ -273,9 +273,9 @@ Play() {
 		clear
 		echo
 		echo "-Standard maps----------------------"
-		echo "1. Templates"
-		echo "2. Maze"
-		echo "3. TBD"
+		echo "1. Tutorials"
+		echo "2. Classic"
+		echo "3. Maze"
 		echo "4. TBD"
 		echo "5. TBD"
 		echo "-Other maps-------------------------"
@@ -286,8 +286,9 @@ Play() {
 		echo
 		read -rsn1 -p "Press a specific number key to continue: " input
 		all="false"
-		[ "$input" = "1" ] && Campaign Template
-		[ "$input" = "2" ] && Campaign Maze
+		[ "$input" = "1" ] && Campaign Tutorial
+		[ "$input" = "2" ] && Campaign Template
+		[ "$input" = "3" ] && Campaign Maze
 		[ "$input" = "6" ] && (core/Start_map.sh || Error)
 		[ "$input" = "7" ] && (core/Start_pack.sh || Error)
 		[ "$input" = "8" ] && break

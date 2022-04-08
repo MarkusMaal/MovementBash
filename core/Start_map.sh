@@ -15,6 +15,15 @@ shoots2="0"
 moves2="0"
 keypressed="false"
 canskip="true"
+cust1=""
+cust2=""
+cust3=""
+cust4=""
+cust5=""
+cust6=""
+cust7=""
+cust8=""
+cust9=""
 #character="@"
 
 #
@@ -142,7 +151,7 @@ finish="False"
 map=""
 last=50
 last2=-1
-
+map_ifcheck
 #
 # Layout - updates the screen layout
 #

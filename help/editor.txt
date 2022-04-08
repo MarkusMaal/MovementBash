@@ -126,6 +126,10 @@ Commonly used variables include:
 - $multiplayer - if true, multiplayer mode is
   enabled
 - $shoot - maximum shooting distance
+- $cust1-$cust9 - custom global variables, freely
+  usable by the map (e.g. if the map has custom
+  save data, you can use these variables for
+  loading that data)
 
 Save the file in the editor and close, to return
 to the editor and integrate the script with the
