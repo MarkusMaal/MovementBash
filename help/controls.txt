@@ -1,0 +1,17 @@
+The default controls are the following:
+		
+Skip map/Return to main menu: [E]
+Testing mode: [M] (your signature must be set to "Developer", otherwise this won't work)
+Player 1 move left: [Left]
+Player 1 move right: [Right]
+Player 1 move up: [Up]
+Player 1 move down: [Down]
+Player 1 shoot left: [Delete]
+Player 1 shoot right: [Page Down]
+Player 2 move left: [A]
+Player 2 move right: [D]
+Player 2 move up: [W]
+Player 2 move down: [S]
+Player 2 shoot left: [C]
+Player 2 shoot right: [V]
+

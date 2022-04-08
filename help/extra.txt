@@ -1,0 +1,128 @@
+ 
+Movement Bash - extra stuff
+
+Under the "Extras" menu, you can do some additional and perhaps cool things!
+
+
+* Previewing maps *
+
+    This allows you to preview any map that exists in the maps
+    directory without actually loading the maps! Just select a
+    map from the file browser and a preview will be generated
+    (for further info, see "Menu navigations" under help).
+    
+    Map preview example in Unicode mode:
+    
+        medium by markustegelane
+
+        █████████
+        █▒▒▒▒▒▒▒█
+        █▒▒▒▒▒▒▒█
+        █▒▒▒▒▒▒▒█
+        █████████
+
+        Press any key to continue . . . 
+
+    Map preview example in ASCII mode:
+    
+        medium by markustegelane
+
+        #########
+        #```````#
+        #```````#
+        #```````#
+        #########
+
+        Press any key to continue . . . 
+
+* Generating random maps *
+
+    Movement bash allows you to generate random maps, which
+    contain walls and teleporters. Some of these maps will be
+    impossible, but some may be solvable!
+    
+    Before you can generate a random map you'll be asked for
+    the following details:
+    
+        Map name - This is what the map will be called. Set
+        this to whatever you like.
+        
+        Map width - This is the width of the map. If you
+        don't care, you can just press Enter and 20 will be
+        selected as the default width.
+        
+        Map height - This is the height of the map. If you
+        don't care, you can just press Enter and 5 will be
+        selected as the default height.
+    
+    After entering these details, the game should now create a
+    brand new map for you. If everything's finished, you should
+    see the following message:
+    
+        Map generated!
+        Press any key to continue . . . 
+    
+    The generated map can be accessed by loading a custom map
+    with the name you specified before generating the map.
+    
+    Random map example:
+    
+        Movement Bash
+        Loaded map: whatdoweknowaboutanything by Random Map Generator
+
+        ░░░█░░░░░█▒░▒░░██▒▒░        
+        ▒░▒█░▒█▒█▒░░█▒██▒▒▒░        
+        ░░█▒░▒█▒▒▒░█▒▒░▒▒░█▒        
+        ░▒█░░▒█░▒███░░F██▒@░        
+        █░█░█▒░░░██▒███░███░        
+
+    Note 1: The author's signature for these maps will always be
+    set to "Random Map Generator"
+    
+    Note 2: The larger the map, the slower the performance will
+    be. Try to avoid making ridiculously huge maps.
+    
+* Converting Movement Batch map geometry (alpha) *
+
+    Since Movement Bash uses a completely different format for storing
+    map data, it isn't natively backwards compatible with Movement
+    Batch maps.
+    
+    This menu option can help you convert the geometry from a Movement
+    Batch map to Movement Bash format. Please note that only the
+    following data will be converted:
+    
+        - Map blocks (a1-a100 or a1-a400)
+        - Start position (start)
+        - Second start position (start2)
+        - Map author (will be converted into a signature)
+        
+    The following data WILL NOT be converted and will have to be re-added
+    manually:
+    
+        - Finish positions
+        - Wall locations
+        - Shootable objects
+        - Unshootable objects
+        - Custom scripts
+    
+    The following types of Movement Batch maps are supported:
+    
+        - Classic 20x5 no-color, no gravity maps
+        - Modern 40x10 no-color, no gravity maps
+    
+    Color maps are not supported. Gravity maps will convert,
+    but any gravity data will be lost.
+    
+    Since this option is in alpha, there WILL be conversion
+    errors. If a faulty map is produced, you can delete it
+    using the delete map option.
+
+* Credits *
+
+    Shows the credits for Movement Bash. This includes anything that
+    needs to be credited.
+
+* Reload menu *
+
+    Allows you to display another map and splash text on the main menu!

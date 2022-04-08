@@ -1,0 +1,154 @@
+ 
+Movement Bash editor
+
+The Movement Bash editor allows you to make custom maps,
+which you can play and share with others!
+
+
+* Basic navigation *
+
+You can move the cursor using WASD and use E to exit
+(NOTE: This option will NOT save the map, please press
+X if you want save and then press E).
+
+Press X to save the map.
+
+
+* Placing blocks *
+
+When moving the cursor to desired place, you can press
+P to place the placable character. You can press C to
+change the placable character. You can also press M
+if you want to use a character that's not in the list.
+
+
+* Setting start and finish points *
+
+Pressing B (for beginning) allows you to set start
+point, which is where the character will spawn when
+loading the map.
+
+To set the opponent's start point, press Q.
+
+Pressing F allows you to set finish point (by default
+undefined), which is the block player has to go to in
+order to finish the map.
+
+
+* Adding walls *
+
+Pressing O will make the block the cursor is placed
+collidable (ie you can't step on it).
+
+Pressing L will do the same for the opponent's
+character.
+
+To list all collidable blocks, press J.
+
+
+* ASCII v.s. Unicode mode *
+
+Depending on the user's preference, you can toggle
+between the two modes to see how your map looks
+with either one. This is also helpful for
+identifying blocks, since the status area only
+shows selected blocks in ASCII mode.
+
+
+* Shootable and unshootable objects *
+
+Sometimes you may want to add blocks, which you
+can shoot. These are called shootable objects.
+To add a shootable object, first move onto the
+block you want to make shootable. Then select a
+character, which the current chracter gets
+replaced by after shooting. Then press K to add
+a shootable object. If done correctly, you should
+see the custom script lines counter increment by
+one.
+
+In other situations, you want to make it so that
+you can't shoot over a block. To make a block
+unshootable, move onto it and then press I.
+
+Unshootable blocks can be viewed, along with walls,
+by pressing J.
+
+
+* Custom scripts *
+
+Pressing Z will allow you to edit a custom script,
+launching you into a plain text editor. We use the
+$EDITOR variable to determine, which plain text
+editor we should use. If the variable is not
+defined, we'll prompt you to specify, which editor
+to use.
+
+The custom script uses bash as its language.
+
+Commonly used variables include:
+- $position and $position2 - player positions
+- $character and $character2 - player characters
+- $map - sequentially contains all blocks from
+  the current map, along with any characters,
+  bullets, etc.
+- $orig_map - sequentially contains all blocks
+  from the current map, without any characters,
+  bullets, etc.
+- $last and $last2 - previous player positions
+- $polas and $polas2 - directional player
+  positions (same as $last$position or
+  $last2$position2)
+- $shootpos - bullet position
+- $solas - directional bullet position
+- $shoots and $shoots2 - number of shoots for
+  each player
+- $moves and $moves2 - number of moves for each
+  player
+- $ascii - true/false, ASCII mode setting
+- $d1 and $d2 - stands for dead1 and dead2, if
+  true, that player has been killed by a bullet
+- $splice - number of blocks per row
+- $blocks - number of total blocks
+- $lines - number of rows (same as $blocks/$splice)
+- $author - author's signature
+- $filename - name of the current map
+- $endshoot - if true, force bullet to stop
+- $dev - if true, allow user to press M for
+  enabling testing mode
+- $input - player's input
+- $finish - if true, a player has finished the
+  map
+- ${orig_map:$position:1} and
+  ${orig_map:$position2:1} - blocks, which the
+  players are standing on
+- $me - player's signature
+- $multiplayer - if true, multiplayer mode is
+  enabled
+- $shoot - maximum shooting distance
+
+Save the file in the editor and close, to return
+to the editor and integrate the script with the
+map. You should see the number of script lines
+change after saving and closing the editor.
+
+
+Functions inside the Start_map.sh file:
+
+- layout - update the blocks
+- screen - displays the map
+- prompt - wait for player to press a key
+- ifcheck - checks the position of player
+  to make sure your character doesn't go
+  out of bounds or roll over to the next
+  line
+- map_ifcheck - map's custom ifcheck
+- shoot - fires the bullet in a desired direction
+  the first argument specifies which direction
+  (-1 for left, 1 for right)
+
+WARNING: If the script has an error, the map will
+be unplayable. Also, NEVER give any custom script
+elevated priviledges. If a map asks for your
+password, it's almost certainly a trojan and/or
+phishing attack.

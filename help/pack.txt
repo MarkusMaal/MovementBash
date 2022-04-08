@@ -1,0 +1,75 @@
+
+Movement Bash map pack editor
+
+Map packs are collections of maps. Think of them as a playlist for
+Movement Bash maps. The map pack editor allows you to make and
+edit these collections.
+
+
+* Creating or loading a map pack *
+
+Both actions can be performed by selecting "Create a map pack"
+from the "Create" menu.
+
+If you want to edit an existing map pack, choose a map pack from
+the file browser.
+
+If you want to create a new map pack, press [C] and then specify
+a name for the map pack.
+
+* Editing map packs *
+
+Next you'll see the map pack editor. If you don't have any maps
+selected, you'll see 5 options:
+
+    1. Add map
+    Allows you to browse for an existing map, that you want to
+    add to the map pack. After adding a map, the number of maps
+    should increase by one.
+
+    2. Select map
+    Allows you to select and list all maps in the map pack.
+    If you select a map, you'll see additional options.
+    
+    3. Exit editor
+    Exits the map pack editor and returns to the main menu.
+    This will NOT, by itself, save any changes.
+    
+    4. Save map pack
+    Saves any changes made to the map pack.
+
+    5. Check maps
+    Allows you to check, which maps in the map pack exist
+    and which ones are invalid. Any errors found will be
+    shown to the user and then fixed.
+
+Once you select a map, you'll see a number of new options:
+
+    1. Add map
+    
+    2. Select map
+    
+    3. Change map
+    Allows you to change this map to
+    something else.
+
+    4. Remove map
+    Removes this map from the map pack.
+
+    5. Swap with another map in map pack
+    Allows you to swap with another map i.e. reorder it.
+    You'll be prompted to select, which map you want to
+    replace the selected one with.
+
+    6. Preview map
+    Allows you to preview what the selected map looks like.
+    Both Unicode and ASCII modes are previewed.
+    
+    7. Exit editor
+    
+    8. Save map pack
+    
+    9. Check maps
+
+As you can see, some of the previous menu options
+were re-numbered.

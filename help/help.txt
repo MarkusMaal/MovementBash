@@ -1,0 +1,40 @@
+
+Movement Bash quick start guide
+
+Movement Bash is a port of Movement Batch (classic 
+version) for bash shells.
+
+Uses the same function names as well as the same 1.5D
+map rendering engine. The code is well documented for
+people interested in hacking/reprogramming the game.
+
+
+* How to use help *
+
+If you loaded this help file inside the game, you can
+use arrow key to scroll, page up/down for quick
+scroll, and "q" to go back.
+
+* Launching the game *
+
+First extract the tar archive to a separate folder and
+use cd to go to that folder. To launch the game, type
+the following command:
+
+./Start_game.sh
+
+If this doesn't work, you can also try this:
+
+bash Start_game.sh
+
+* Launching the game in Windows *
+
+You can use Git's shell or Windows Subsystem for Linux
+to launch this game.
+
+* How to play? *
+
+Use arrow keys to move. Press E to exit/skip map. After getting to
+the finish line, the game is finished. Press Delete and Page Down
+to shoot left or right respectively. See "Controls" under help for
+more info on default controls.
