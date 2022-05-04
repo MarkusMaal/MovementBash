@@ -1,4 +1,3 @@
-#!/bin/bash
 #
 # Movement Bash Map Pack editor
 #
@@ -167,6 +166,7 @@ Check() {
 }
 
 while true; do
+	echo -e "\e[0m\e[39m"
 	clear
 	echo -e "\e[96mMovement Bash Map Pack Editor\n\e[93mLoaded pack: \e[37m${packname}\n"
 	echo "This map pack contains ${#maps_array[@]} maps"

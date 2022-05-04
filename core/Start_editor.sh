@@ -1,4 +1,3 @@
-#!/bin/bash
 #
 # Movement Bash Map Editor
 #
@@ -42,6 +41,8 @@ if [ "$filename" = "" ]; then
 	rm .m
 fi
 ifcheck="ifchecks/${filename}_ifcheck.sh"
+echo "Loading custom scripts..."
+readarray -t script_array < <(cat $ifcheck)
 filename="maps/$filename"
 # Orig_map is the original map without any cursor/player characters
 orig_map=""
@@ -94,8 +95,9 @@ if [ "$orig_map" = "" ]; then
 	done
 	touch "$ifcheck"
 else
-	echo "Running simulation..."
+	echo "Starting simulation..."
 	source ./$ifcheck
+	echo -ne "Detecting walls, unshootable objects, finish block"
 	for (( i=0; i<${blocks}; i++ ))
 	do
 		last=$(($i-1))
@@ -106,28 +108,65 @@ else
 		shootpos="$i"
 		backup="${orig_map:$shootpos:1}"
 		map_ifcheck
-		[ "$position" = "$last" ] && collide_array+=("$i") && collide_id=$(( $collide_id + 1 ))
-		[ "$position2" = "$last2" ] && collide_array2+=("$i") && collide_id2=$(( $collide_id2 + 1 ))
-		[ "$endshoot" = "true" ] && scollide_array+=("$i") && scollide_id=$(( $scollide_id + 1 ))
-		[ "$finish" = "True" ] && finish="$i"
+		[ "$position" = "$last" ] && collide_array+=("$i") && collide_id=$(( $collide_id + 1 )) && echo -ne "."
+		[ "$position2" = "$last2" ] && collide_array2+=("$i") && collide_id2=$(( $collide_id2 + 1 )) && echo -ne "."
+		[ "$endshoot" = "true" ] && scollide_array+=("$i") && scollide_id=$(( $scollide_id + 1 )) && echo -ne "."
+		[ "$finish" = "True" ] && finish="$i" && echo -ne "."
 		orig_map="${orig_map:0:$shootpos}$backup${orig_map:$(($shootpos+1)):$((${blocks}-$shootpos))}"
 	done
+	echo
 	echo "Resetting position variable..."
 	position="$start"
 	first_read=$(($collide_id+$collide_id2+$scollide_id+2))
 	[ "$finish" = "False" ] && first_read=$(($first_read-1))
 	cnt=0
-	echo "Loading custom scripts..."
-	while read line
+	echo -ne "Detecting custom script"
+	#while IFS= read -r line
+	#do
+    #    script_array+=("$line")
+    #    echo $line
+    #    read
+		#if [ "$cnt" -gt "$first_read" ];
+		#then
+		#	script_array+=("$line")
+		#fi
+		#cnt=$((cnt+1))
+	#done
+	unset script_array[0]
+	temp_array=("${script_array[@]}")
+	unset script_array
+	match="${#temp_array[$i]}"
+	for (( i=0; i<=${#temp_array[@]}; i++ ))
 	do
-		if [ "$cnt" -gt "$first_read" ];
-		then
-			script_array+=("$line")
-		fi
-		cnt=$((cnt+1))
-	done < $ifcheck
-	unset 'script_array[${#script_array[@]}-1]'
-	unset 'script_array[${#script_array[@]}-1]'
+        [ "${#temp_array[$i]}" = "0" ] && continue
+        temp_array[$i]="${temp_array[$i]:1}"
+        add_script="true"
+        if [[ "${temp_array[$i]}" == *"[ \"\$position\" = \""* ]] && [[ "${temp_array[$i]}" == *"finish=\"True\""* ]]; then
+            unset temp_array[$i] && add_script="false"
+        elif [[ "${temp_array[$i]}" == *"[ \"\$position2\" = \""* ]] && [[ "${temp_array[$i]}" == *"finish=\"True\""* ]]; then
+            unset temp_array[$i] && add_script="false"
+        elif [[ "${temp_array[$i]}" == *"position=\"\$last\""* ]] && [[ "${temp_array[$i]}" == *"[ \"\$position\" = \""* ]]; then
+            unset temp_array[$i] && add_script="false"
+        elif [[ "${temp_array[$i]}" == *"position2=\"\$last2\""* ]] && [[ "${temp_array[$i]}" == *"[ \"\$position2\" = \""* ]]; then
+            unset temp_array[$i] && add_script="false"
+        elif [[ "${temp_array[$i]}" == *"endshoot=\"true\""* ]] && [[ "${temp_array[$i]}" == *"[ \"\$shootpos\" = \""* ]]; then
+            unset temp_array[$i] && add_script="false"
+        fi
+        [ "$add_script" = "false" ] && continue
+            echo -ne "."
+        match=$(($match-1))
+        script_array+=("${temp_array[$i]}")
+	done
+	echo
+	if [ $match == -${#temp_array[$i]} ]; then
+        unset collide_array
+        unset scollide_array
+        unset collide_array2
+	fi
+	echo "Map loaded."
+	read -rsn1 -p "Press any key to continue . . . "
+	#unset 'script_array[${#script_array[@]}-1]'
+	#unset 'script_array[${#script_array[@]}-1]'
 fi
 
 # Reset some variables
@@ -183,18 +222,18 @@ screen () {
 			echo "$smap"
 	     fi
 	done
-        echo -e "\e[39m\nUse WASD to move, press E to exit"
-        echo -e "\nC - Change block   P - Place block   M - Custom block\nB - Start point    F - Finish line   U - Toggle ascii/unicode mode\nO - Add obstacle   Z - Add script    X - Save changes\nQ - Player2 start   L - Player2 obstacle   I - Unshootable object\nK - Make shootable object"
 	epos=$(($position+1))
 	cchar=$(echo "$orig_map" | cut -c$epos-$epos)
-	echo -e "\nPos: $position (${splice}x$(($blocks/$splice+1)) blocks)"
-	echo "Block below character: $cchar"
-	echo "Placable character: $bchar"
-	echo "Start point(s): $start; $start2 , Finish: $finish"
-	echo "Collidable Player1 blocks: ${#collide_array[@]} [J to display]"
-	echo "Collidable Player2 blocks: ${#collide_array2[@]}"
-	echo "Unshootable objects: ${#scollide_array[@]}"
-	echo "Custom script lines: ${#script_array[@]}"
+	tdy=$(($position/$splice))
+	tdx=$(($position - ($splice * $tdy)))
+	tdy=$(($tdy+1))
+	tdx=$(($tdx+1))
+	echo -e "\n\e[39mPos: $position, Pos2D: ${tdx}x${tdy}, Dims: ${splice}x$(($blocks/$splice+1))"
+	echo "Block below: $cchar, Block: $bchar, Start: $start; $start2 , Finish: $finish"
+	echo "Walls: P1=${#collide_array[@]} P2=${#collide_array2[@]}, Unshootables: ${#scollide_array[@]} [J to display]"
+	echo "Script lines: ${#script_array[@]}"
+    echo -e "\e[39m\nUse WASD to move, E = Exit, X = Save"
+    echo -e "Press N to see more keymaps"
 }
 
 #
@@ -218,6 +257,10 @@ prompt () {
 	elif [ "$input" = "d" ]; then
 		last=$position
 		position=$(($position+1))
+    elif [ "$input" = "n" ]; then
+        clear
+        echo -e "\nC - Change block   P - Place block   M - Custom block\nB - Start point    F - Finish line   U - Toggle ascii/unicode mode\nO - Add obstacle   Z - Add script    X - Save changes\nQ - Player2 start   L - Player2 obstacle   I - Unshootable object\nK - Make shootable object"
+        read -rsn1 -p "Press any key to continue . . . "
 	elif [ "$input" = "c" ]; then
 # Predefined characters
 		if [ "$bchar" = "#" ]; then
@@ -264,22 +307,25 @@ prompt () {
 		echo "Player 1 obstacles:"
 		for line in "${collide_array[@]}"
 		do
-			echo "$line"
+			echo -ne "$line "
 		done
+		echo
 		read -rsn1 -p "Press any key to continue . . . "
 		clear
 		echo "Player 2 obstacles:"
 		for line in "${collide_array2[@]}"
 		do
-			echo "$line"
+			echo -ne "$line "
 		done
+		echo
 		read -rsn1 -p "Press any key to continue . . . "
 		clear
 		echo "Unshootables:"
 		for line in "${scollide_array[@]}"
 		do
-			echo "$line"
+			echo -ne "$line "
 		done
+		echo
 		read -rsn1 -p "Press any key to continue . . . "
 	elif [ "$input" = "l" ]; then
 		c="$colls2"
@@ -313,26 +359,30 @@ prompt () {
 		echo "$start2">>$filename
 		echo "$author">>$filename
 		echo "$splice">>$filename
-		echo "Saving map logic..."
+		echo -ne "Saving map logic..."
 		filend="_ifcheck.sh"
 		echo "function map_ifcheck {">${filename/maps/ifchecks}$filend
 		for i in "${collide_array[@]}"; do
 			ob_1="$i"
 			echo "	[ \"\$position\" = \"$ob_1\" ] && position=\"\$last\"">>${filename/maps/ifchecks}$filend
+			echo -ne "."
 		done
 		for i in "${collide_array2[@]}"; do
 			ob_1="$i"
 			echo "	[ \"\$position2\" = \"$ob_1\" ] && position2=\"\$last2\"">>${filename/maps/ifchecks}$filend
+			echo -ne "."
 		done
 		for i in "${scollide_array[@]}"; do
 			ob_1="$i"
 			echo "	[ \"\$shootpos\" = \"$ob_1\" ] && endshoot=\"true\"">>${filename/maps/ifchecks}$filend
+			echo -ne "."
 		done
 		echo "	[ \"\$position\" = \"$finish\" ] && finish=\"True\"">>${filename/maps/ifchecks}$filend
 		echo "	[ \"\$position2\" = \"$finish2\" ] && finish=\"True\"">>${filename/maps/ifchecks}$filend
 		for i in "${script_array[@]}"; do
 			ob_1="$i"
 			echo "	$ob_1">>${filename/maps/ifchecks}$filend
+			echo -ne "."
 		done
 		echo "}">>${filename/maps/ifchecks}$filend
 	        echo -e "\e[39m\nMap saved"
@@ -348,23 +398,23 @@ prompt () {
 		fi
 # Code for editing custom scripts
 	elif [ "$input" = "k" ]; then
-		script_array+=("[ \"\$shootpos\" = \"${position}\" ] && orig_map=\"\${orig_map:0:\$shootpos}\\${bchar}\${orig_map:\$((\$shootpos+1)):\$((${blocks}-\$shootpos))}\"")
+		script_array+=("[ \"\$shootpos\" = \"${position}\" ] && orig_map=\"\${orig_map:0:\$shootpos}\\${bchar}\${orig_map:\$((\$shootpos+1)):\$((${blocks}-\$sh33ootpos))}\"")
 	elif [ "$input" = "z" ]; then
 		clear
-		txtdit="$EDITOR"
-		if [ "$textdit" = "" ]; then
+		[ "$texdit" = "" ] && texdit="$(which editor)"
+		if [ "$texdit" = "" ]; then
 			echo
 			echo "We couldn't find the default command line editor. Please specify,"
 			echo "which editor you'd like to use."
 			echo
-			read -p "Enter the name of the text editor you'd like to use: " textdit
+			read -p "Enter the name of the text editor you'd like to use: " texdit
 		fi
-		if [ "$textdit" != "" ]; then
+		if [ "$texdit" != "" ]; then
 			touch .filescript
 			for i in "${script_array[@]}"; do
 				echo "$i">>.filescript
 			done
-			$textdit .filescript
+			$texdit .filescript
 			id=0
 			while read -r line; do
 			    script_array[$id]="$line"

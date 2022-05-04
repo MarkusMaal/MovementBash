@@ -1,3 +1,18 @@
+[ -f "/bin/bash" ] && #!/bin/bash
+[ -f "/usr/bin/bash" ] && #!/usr/bin/bash
+[ -f "/Programs/Bash/5.0/bin/bash" ] && #!/Programs/Bash/5.0/bin/bash
+[ -f "/run/current-system/sw/bin/bash" ] && #!/Programs/Bash/5.0/bin/bash
+[ -f "/usr/local/bin/bash" ] && #!/usr/local/bin/bash
+#
+# The above code is needed for non-Linux OSs that support bash,
+# like FreeBSD or radically different Linux OSs that don't follow
+# the UNIX-like file path standards.
+#
+# OS-s without bash or bash compatible shell will not work
+#
+# For Windows, you can use Git or Windows Subsystem for Linux
+#
+
 #
 # Movement Bash
 #
@@ -10,10 +25,9 @@
 # Start_game.sh is located and then type ./Start_game.sh
 # to launch the script.
 #
-# If this doesn't work, please try launching the game using
-# the Movement_bash.sh file
+# Note that launching directly from a file manager or using
+# the sh command won't work
 #
-
 pushd "$(dirname "$BASH_SOURCE")" > /dev/null
 #setterm -term linux -back black -fore white -clear all
 printf "\e]2;Game is currently starting up. If you can read this, then I recommend you to drink coffee...\a"
@@ -63,12 +77,12 @@ SaveConfig() {
 #
 
 Setup() {
-    printf "\e]2;OOBE\a"
 	clear
 	echo
 	echo "Welcome to Movement Bash!"
 	echo
-	echo "Since you are playing for the first time, we need to know your signature."
+	echo "Player 1 character not found. Default setting: @"
+	echo "Player 2 character not found. Default setting: #"
 	echo
 	echo "Movement Bash uses your signature in the main menu and as the author on custom maps you make."
 	echo "Your signature is also visible to custom scripts in custom maps."
@@ -79,7 +93,7 @@ Setup() {
 		[ "$me" = "Developer" ] && echo "This is a reserved signature"
 	done
 	echo
-	echo "Saving configuration..."
+	echo "Saving to .config..."
 	shoot="5"
 	SaveConfig
 	echo "e" > .ctrl
@@ -96,72 +110,9 @@ Setup() {
 	echo "d" >> .ctrl
 	echo "c" >> .ctrl
 	echo "v" >> .ctrl
-	clear
-	echo
-	echo "If controls don't work, set them manually in the"
-	echo "following menu:"
-	echo
-	echo "2. Options > 7. Set controls"
-	echo
+	echo "Note: If controls don't work, set them manually in"
+	echo "the options menu."
 	read -rsn1 -p "Press any key to continue . . . "
-	clear
-	good="False"
-	ptuto=""
-	echo
-	echo "Tutorial"
-	echo
-	echo "Would you like to play the tutorial levels?"
-	echo
-	echo -ne "Press Y=Yes or N=No [Y/N] "
-	while [ "$good" = "False" ]; do
-        read -rsn1 ptuto
-        [ "$ptuto" = "Y" ] && good="True"
-        [ "$ptuto" = "y" ] && good="True"
-        [ "$ptuto" = "N" ] && good="True"
-        [ "$ptuto" = "n" ] && good="True"
-    done
-    [ "$ptuto" = "n" ] && ptuto="N"
-    [ "$ptuto" = "y" ] && ptuto="Y"
-    if [ "$ptuto" = "N" ]; then
-        clear
-        echo
-        echo "Okay. But if you change your mind, go to the following"
-        echo "menu option:"
-        echo
-        echo "1. Start > 1. Tutorials"
-        echo
-        read -rsn1 -p "Press any key to finish setup . . . "
-    else
-        clear
-        echo
-        echo "Good choice! Before we begin, here are some controls"
-        echo "you should know about!"
-        echo
-        echo "Arrow keys - Move character"
-        echo "Delete     - Shoot left"
-        echo "Page Down  - Shoot right"
-        echo
-        echo -e "\e[5m\e[91mWarning\e[37m\e[0m  If the game freezes or becomes unresponsive"
-        echo "         during the tutorial, please press Ctrl+C to stop"
-        echo "         the bash script and then relaunch the game. All"
-        echo "         of your preferences have already been saved."
-        echo
-        read -rsn1 -p "Press any key to start the tutorial levels . . . "
-        Campaign Tutorial oobe
-        printf "\e]2;OOBE\a"
-        clear
-        echo
-        echo "Congratulations!"
-        echo
-        echo "You finished all of the tutorial levels!"
-        echo
-        echo "If you want to redo the tutorial, you can do so,"
-        echo "by going to the following menu option:"
-        echo
-        echo "1. Start > 1. Tutorials"
-        echo
-        read -rsn1 -p "Press any key to finish setup . . . "
-    fi
 }
 
 
@@ -289,8 +240,6 @@ Campaign() {
         pushd campaign/$1 > /dev/null
     done
     popd > /dev/null
-    stty echo
-    [ "$2" = "oobe" ] && return
 	clear
 	echo
 	echo "Congratulations!"
@@ -298,6 +247,7 @@ Campaign() {
 	echo "You finished all of the \"$1\" maps!"
 	echo
 	read -rsn1 -p "Press any key to continue . . . "
+    stty echo
 }
 
 Error() {
@@ -326,16 +276,15 @@ Play() {
 	while true; do
 		clear
 		echo
-		echo "---------***Start game***-----------"
-		echo
 		echo "-Standard maps----------------------"
 		echo "1. Tutorials"
 		echo "2. Classic"
 		echo "3. Maze"
+		echo "4. TBD"
 		echo "-Other maps-------------------------"
-		echo "4. Custom map"
-		echo "5. Custom map pack"
-		echo "6. Random map"
+		echo "5. Custom map"
+		echo "6. Custom map pack"
+		echo "7. Random map"
 		echo "-Misc-------------------------------"
 		echo "8. Go back"
 		echo
@@ -344,9 +293,9 @@ Play() {
 		[ "$input" = "1" ] && Campaign Tutorial
 		[ "$input" = "2" ] && Campaign Template
 		[ "$input" = "3" ] && Campaign Maze
-		[ "$input" = "4" ] && (core/Start_map.sh || Error)
-		[ "$input" = "5" ] && (core/Start_pack.sh || Error)
-		[ "$input" = "6" ] && echo "$(ls maps|sort -R |tail -1)" > .m && core/Start_map.sh && rm .m; stty echo
+		[ "$input" = "5" ] && (core/Start_map.sh || Error)
+		[ "$input" = "6" ] && (core/Start_pack.sh || Error)
+		[ "$input" = "7" ] && echo "$(ls maps|sort -R |tail -1)" > .m && core/Start_map.sh && rm .m; stty echo
 		[ "$input" = "8" ] && break
 	done
 }
@@ -360,20 +309,17 @@ Editors() {
 	while true; do
 		clear
 		echo
-		echo "----------///Editors///------------"
-		echo
 		echo "-Create----------------------------"
 		echo "1. Create map or edit existing one"
-		echo "2. Create or edit a map pack"
+		echo "2. Create a map pack"
 		echo "-Rename----------------------------"
-		echo "3. Rename a map"
-		echo "4. Rename a map pack"
+		echo "3. Rename map"
+		echo "4. Rename map pack"
 		echo "-Delete----------------------------"
-		echo "5. Delete a map"
-		echo "6. Delete a map pack"
+		echo "5. Delete map"
+		echo "6. Delete map pack"
 		echo "-Misc------------------------------"
-		echo "7. Clone a sample map"
-		echo "8. Go back"
+		echo "7. Go back"
 		echo 
 		read -rsn1 -p "Press a specific number key to continue: " input
 		[ "$input" = "1" ] && core/Start_editor.sh
@@ -417,61 +363,19 @@ Editors() {
 			clear
 			echo "Map pack deleted"
 			read -rsn1 -p "Press any key to continue . . . "
-		elif [ "$input" = "7" ]; then
-            clear
-            echo
-            echo "// Clone a sample map //"
-            echo
-            echo "----------------------------"
-            echo "1. Maze"
-            echo "2. Template"
-            echo "3. Tutorial"
-            echo "----------------------------"
-            echo
-            echo "4. Cancel"
-            echo
-            read -rsn1 -p "Select collection: " id
-            cancel="false"
-            prefix=""
-            [ "$id" == "1" ] && core/Browser.sh campaign/Maze && prefix="Maze"
-            [ "$id" == "2" ] && core/Browser.sh campaign/Template && prefix="Template"
-            [ "$id" == "3" ] && core/Browser.sh campaign/Tutorial && prefix="Tutorial"
-            [ "$id" == "4" ] && cancel="true"
-            [ -f ".m" ] && read original < .m
-            [ -f ".m" ] || continue
-            rm .m
-            clear
-            read -p "Enter new map name: " new
-            cp "campaign/${prefix}/${original}" "maps/${new}"
-            cp "ifchecks/${original}_ifcheck.sh" "ifchecks/${new}_ifcheck.sh"
-            clear
-            echo
-            echo "The map has been cloned as \"${new}\" and"
-            echo "can now be accessed by the map editor"
-            echo
-            read -rsn1 -p "Press any key to continue . . . "
 		fi
-		[ "$input" = "8" ] && break
+		[ "$input" = "7" ] && break
 	done
 }
 
 Exit() {
 	popd > /dev/null
 	clear
-	echo
-	echo "Movement Bash session ended"
-	echo
-	echo "If you opened this bash script in a terminal emulator"
-	echo "through a graphical file manager, you can safely close"
-	echo "this window by pressing Alt+F4."
-	echo
-	[ "$1" = "" ] || (echo "Attempting to close terminal..." && (pkill $1 && exit 0 || (echo "Couldn't close terminal emulator." && exit 1)))
-	exit 0
+	exit
 }
 
 Extras() {
 	while true; do
-		echo -e "\e[0m\e[39m"
 		clear
 		echo
 		echo "+++ Extras +++"
@@ -663,10 +567,8 @@ Preview_map() {
 Help() {
 	while true; do
 		clear
-		echo -e "\e[0m\e[39m"
-		echo "(?) Help (?)"
 		echo
-		echo "To close a help file, press \"q\""
+		echo "(?) Help (?)"
 		echo
 		echo "1. Quick start guide"
 		echo "2. Default controls"
@@ -702,22 +604,22 @@ Help_formatting() {
 	echo "scores for light colors."
 	echo
 	echo -e "e.g. \"*b*test\" will show up as \e[34mtest\e[37m"
-	echo -e "\e[0m\e[39m     \"_b_test\" will show up as \e[94mtest\e[37m"
-	echo -e "\e[0m\e[39m"
+	echo -e "     \"_b_test\" will show up as \e[94mtest\e[37m"
+	echo
 	read -rsn1 -p "Press any key to see color codes. . . "
 	clear
 	echo
 	echo "Color codes"
 	echo
-	echo -e "\e[0m\e[39mi - \e[90mBlack/gray\e[37m"
-	echo -e "\e[0m\e[39mr - \e[31mRed\e[37m"
-	echo -e "\e[0m\e[39mg - \e[32mGreen\e[37m"
-	echo -e "\e[0m\e[39my - \e[33mYellow\e[37m"
-	echo -e "\e[0m\e[39mb - \e[34mBlue\e[37m"
-	echo -e "\e[0m\e[39mm - \e[35mMagenta\e[37m"
-	echo -e "\e[0m\e[39mc - \e[36mCyan\e[37m"
-	echo -e "\e[0m\e[39mw - \e[37mWhite"
-	echo -e "\e[0m\e[39m"
+	echo -e "i - \e[90mBlack/gray\e[37m"
+	echo -e "r - \e[31mRed\e[37m"
+	echo -e "g - \e[32mGreen\e[37m"
+	echo -e "y - \e[33mYellow\e[37m"
+	echo -e "b - \e[34mBlue\e[37m"
+	echo -e "m - \e[35mMagenta\e[37m"
+	echo -e "c - \e[36mCyan\e[37m"
+	echo -e "w - \e[37mWhite"
+	echo
 	read -rsn1 -p "Press any key to see special operators. . . "
 	clear
 	echo
@@ -797,7 +699,7 @@ ChooseSplash() {
     [ $rng = "39" ] && splash="Have you cheched out multiplayer" && quest="?"
     [ $rng = "40" ] && splash="Damn"
     [ $rng = "41" ] && splash="Winderful"
-    [ $rng = "42" ] && splash="This bash file is HUUUGEE" || zz="ss "
+    [ $rng = "42" ] && splash="This bash file is HUUUGEE"
     [ $rng = "43" ] && splash="Nice to meet you"
     [ $rng = "44" ] && splash="I'm not a robot"
     [ $rng = "45" ] && splash="Also check out \e[1m#\e[2m\e[36mmarkusTegelane\e[0m\e[37m"
@@ -824,7 +726,7 @@ ChooseSplash() {
     [ $rng = "66" ] && splash="\e[5mBlink\e[0m"
     [ $rng = "67" ] && splash="\e[3mItalic\e[0m"
     [ $rng = "68" ] && splash="\e[4mUnderlined text\e[0m"
-    [ $rng = "69" ] && splash="\e[1mConfidence\e[0m" || z="a"
+    [ $rng = "69" ] && splash="\e[1mConfidence\e[0m"
     [ $rng = "70" ] && splash="\e[30mI'm a ninja\e[37m"
     [ $rng = "71" ] && splash="\e[31mR\e[32mG\e[34mB\e[37m"
     [ $rng = "72" ] && splash="\e[1m\e[36mC\e[35mM\e[33mY\e[30mK\e[37m\e[0m"
@@ -853,7 +755,7 @@ ChooseSplash() {
     [ $rng = "94" ] && splash="ASCII or pixel art" && quest="?"
     [ $rng = "95" ] && splash="Elephants are cool"
     [ $rng = "96" ] && splash="Press any key to continue"
-    [ $rng = "97" ] && splash="cqvmix is a dead channel"
+    [ $rng = "97" ] && splash="cqvmix is a cool channel"
     [ $rng = "98" ] && splash="\e[31mHere's Johnny\e[37m"
     [ $rng = "99" ] && splash="My neighbours wanted to greet you"
     [ $rng = "100" ] && splash="Please don't go"
@@ -861,66 +763,7 @@ ChooseSplash() {
     [ $rng = "102" ] && splash="Rabbit Technologies Corporation"
     [ $rng = "103" ] && splash="At least ESD isn't BSD" && quest="..."
     [ $rng = "104" ] && splash="Lunix"
-    [ $rng = "105" ] && splash="Enjoy"
-    [ $rng = "106" ] && splash="Possiblities, limitless"
-    [ $rng = "107" ] && splash="Good time, crazyness"
-    [ $rng = "108" ] && splash="Away"
-    [ $rng = "109" ] && splash="I'm alive"
-    [ $rng = "110" ] && splash="So many things to see"
-    [ $rng = "111" ] && splash="When are you gonna message me" && quest="?"
-    [ $rng = "112" ] && splash="MarkuStation Entertainment"
-    [ $rng = "113" ] && splash="Disconnected"
-    [ $rng = "114" ] && splash="Is there something you want to see" && quest="?"
-    [ $rng = "115" ] && splash="Come here, sit beside me"
-    [ $rng = "116" ] && splash="Oranges"
-    [ $rng = "117" ] && splash="Free and open source"
-    [ $rng = "118" ] && splash="Did you try importing a built-in map" && quest="?"
-    [ $rng = "119" ] && splash="A digital gateway to happiness"
-    [ $rng = "120" ] && splash="Is there something bugging you" && quest="?"
-    [ $rng = "121" ] && splash="It's easy, let me show you"
-    [ $rng = "122" ] && splash="What do you mean, there's nothing to do" && quest="?"
-    [ $rng = "123" ] && splash="All you've got to do is ask me"
-    [ $rng = "124" ] && splash="Welcome to the home of the future"
-    [ $rng = "125" ] && splash="Semiconductors are awesome"
-    [ $rng = "126" ] && splash="I want to be free"
-    [ $rng = "127" ] && splash="At your fingertips"
-    [ $rng = "128" ] && splash="I wish my dream was real"
-    [ $rng = "129" ] && splash="Do you see in infared" && quest="?"
-    [ $rng = "130" ] && splash="Next to your name, there is a sign"
-    [ $rng = "131" ] && splash="Welcome to Movement Bash, the bash file that brings your PC to life"
-    [ $rng = "132" ] && splash="Floppy disk compatible"
-    [ $rng = "133" ] && splash="CD-ROM incompatible"
-    [ $rng = "134" ] && splash="So we can just daisy-chain up to 127 devices here"
-    [ $rng = "135" ] && splash="That must be why we're not shipping Windows 98 yet"
-    [ $rng = "136" ] && splash="I'm trapped and I like it"
-    [ $rng = "137" ] && splash="I am just a random and useless piece of code that lives inside a bash script"
-    [ $rng = "138" ] && splash="You are sitting and looking at a screen"
-    [ $rng = "139" ] && splash="Don't look behind you"
-    [ $rng = "140" ] && splash="Welcome to Bovement Mash"
-    [ $rng = "141" ] && splash="Your settings are stored in .config"
-    [ $rng = "142" ] && splash="Your controls are stored in .ctrl"
-    [ $rng = "143" ] && splash="I'm Batman"
-    [ $rng = "144" ] && splash="I don't use Arch btw"
-    [ $rng = "145" ] && splash="My name is Everything"
-    [ $rng = "146" ] && splash="Crash or bash" && quest="?"
-    [ $rng = "147" ] && splash="If you press Alt + [PrntScrn/SysRq] + B, something amazing happens"
-    [ $rng = "148" ] && splash="Marginally successful"
-    [ $rng = "149" ] && splash="Absolutely nothing"
-    [ $rng = "150" ] && splash="Green tea"
-    [ $rng = "151" ] && splash="Say hello to the internet"
-    [ $rng = "152" ] && splash="Start"
-    [ $rng = "153" ] && splash="Everything at once"
-    [ $rng = "154" ] && splash="It looks like you're running a bash file, would you like some help with that" && quest="?"
-    [ $rng = "155" ] && splash="One day, your computer will be a big $z${zz}table"
-    [ $rng = "156" ] && splash="I have no superpowers"
-    [ $rng = "157" ] && splash="Unprofessional"
-    [ $rng = "158" ] && splash="I eat bits for breakfast"
-    [ $rng = "159" ] && splash="Seriously, what are you looking for?"
-    [ $rng = "160" ] && splash="${me}"
-    [ $rng = "161" ] && splash="We've done it anyway"
-    [ $rng = "162" ] && splash="Garbage basket"
-    [ $rng = "163" ] && splash="Well, this is odd" && quest="..."
-    [ $rng = "164" ] && splash="Last, but not least"
+    [ $rng = "105" ] && splash="Last, but not least"
 }
 
 Reload_main() {
@@ -939,7 +782,7 @@ Reload_main() {
     # "Apparently, this is possible" is a fallback splash text
     quest="!"
     splash="Apparently, this is possible"
-    rng=$(( $RANDOM % 164 + 1 ))
+    rng=$(( $RANDOM % 105 + 1 ))
     ChooseSplash
 }
 
@@ -975,7 +818,6 @@ Reload_main
 # main menu loop
 printf "\e]2;Movement Bash 1.0\a"
 while true; do
-	emu="$(ps -o comm= -p "$(($(ps -o ppid= -p "$(($(ps -o sid= -p "$$")))")))")"
 	clear
 	core/Preview_map.sh $splashmap $ascii
 	echo
@@ -986,9 +828,6 @@ while true; do
 	echo "4. Help"
 	echo "5. Extras"
 	echo "6. Exit"
-	[ "$emu" = "sshd" ] && echo "7. Exit and disconnect"
-	[ "$emu" = "" ] && echo "7. Exit and close this terminal emulator"
-	[ "$emu" = "systemd" ] || ([ "$emu" = "sshd" ] || echo "7. Exit and close $emu")
 	echo
 	read -rsn1 -p "Press a specific number key to continue: " input
 	[ "$input" = "1" ] && Play
@@ -997,6 +836,5 @@ while true; do
 	[ "$input" = "4" ] && Help
 	[ "$input" = "5" ] && Extras
 	[ "$input" = "6" ] && clear && Exit
-	[ "$emu" = "systemd" ] || ([ "$input" = "7" ] && clear && Exit $emu)
 done
 

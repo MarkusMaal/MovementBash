@@ -1,4 +1,3 @@
-#!/bin/bash
 #
 # Movement bash
 #
@@ -8,6 +7,7 @@
 # people interested in hacking/reprogramming the game.
 #
 ascii="$2"
+clr_scrn="false"
 dev="false"
 shoots="0"
 moves="0"
@@ -41,6 +41,7 @@ while read -r line; do character2="$line"; done < <(sed -n '3,3p' ".config")
 while read -r line; do shoot="$line"; done < <(sed -n '4,4p' ".config")
 while read -r line; do ascii="$line"; done < <(sed -n '5,5p' ".config")
 while read -r line; do multiplayer="$line"; done < <(sed -n '6,6p' ".config")
+while read -r line; do clr_scrn="$line"; done < <(sed -n '7,7p' ".config")
 
 e=""
 n=""
@@ -76,6 +77,7 @@ position2="-1"
 author=""
 d1="false"
 d2="false"
+[ "$multiplayer" = "false" ] && d2="True"
 splice="20"
 blocks="100"
 #filename="$1"
@@ -90,7 +92,7 @@ if [ "$filename" = "" ]; then
 	rm .m
 fi
 clear
-echo "Loading.."
+echo -ne "Loading.."
 orig_map=""
 id="0"
 load_dir="maps"
@@ -115,8 +117,11 @@ while read -r line; do
     [ "$id" = "3" ] && author="$line"
     [ "$id" = "4" ] && splice="$line"
     id=$(($id + 1))
+    echo -ne "."
 done < "$load_dir/$filename"
-    
+
+printf "\e]2;${filename}\a"
+
 blocks="$(( ${#orig_map} - 1 ))"
 if [ "$id" -gt "5" ]; then
     clear
@@ -138,12 +143,11 @@ fi
 # Note: The ifcheck file must be marked as executable
 #       and it must contain the map_ifcheck function.
 #
-clear
-echo "Loading..."
 ifname1="ifchecks/$filename"
 ifname2="_ifcheck.sh"
 ifname="$ifname1$ifname2"
 endshoot="false"
+first_draw="true"
 source ./$ifname
 
 # Reset some variables
@@ -169,7 +173,9 @@ layout () {
 		else
 			mapchar="$(echo ${orig_map:$c:1})" && map="$map$mapchar"
 		fi
+		[ "$first_draw" = "true" ] && echo -ne "."
 	done
+	[ "$first_draw" = "true" ] && clear && first_draw="false"
 }
 
 #
@@ -181,6 +187,8 @@ layout () {
 #
 
 screen () {
+	[ "$clr_scrn" = "true" ] && clear
+	stty echo
 	[ "$author" = "" ] || echo -e "\033[0;0H\e[96mMovement Bash\n\e[93mLoaded map:\e[39m $filename by $author\e[97m\n"
 	[ "$author" = "" ] && echo -e "\033[0;0H\e[96mMovement Bash\n\e[93mLoaded map:\e[39m $filename\e[97m\n"
 	for (( c=1; c<=${blocks}; c+=${splice} ))
@@ -205,6 +213,7 @@ screen () {
 	[ "$dev" = "true" ] && echo && echo "Splice: $splice; Blocks: $blocks; Pos: $position; Pos2: $position2"
 	[ "$dev" = "true" ] && echo "Last2: $last2; Last: $last; Block: ${orig_map:$position:1}; Block2: ${orig_map:$position2:1}"
 	[ "$dev" = "true" ] && echo "Moves: $moves; Moves2: $moves2; Shoots: $shoots; Shoots2: $shoots2"
+	stty -echo
 }
 
 #
@@ -216,25 +225,26 @@ screen () {
 prompt () {
 	escape_char="$(printf "\u1b")"
 	input=""
-	while [ "$input" = "" ]; do read -t0.001 -rsn4 input; done
-	[ "$input" = "$w" ] && [ "$d1" = "false" ] && moves="$(($moves+1))" && last=$position && position=$(($position-${splice})) && keypressed="true"
-	[ "$input" = "$s" ] && [ "$d1" = "false" ] && moves="$(($moves+1))" && last=$position && position=$(($position+${splice})) && keypressed="true"
-	[ "$input" = "$d" ] && [ "$d1" = "false" ] && moves="$(($moves+1))" && last=$position && position=$(($position+1)) && keypressed="true"
-	[ "$input" = "$a" ] && [ "$d1" = "false" ] && moves="$(($moves+1))" && last=$position && position=$(($position-1)) && keypressed="true"
-	[ "$input" = "$cl" ] && [ "$d1" = "false" ] && shoots="$(($shoots+1))" && shootpos=$(($position-1)) && shoot -1 && keypressed="true"
-	[ "$input" = "$v" ] && [ "$d1" = "false" ] && shoots="$(($shoots+1))" && shootpos=$(($position+1)) && shoot 1 && keypressed="true"
-	[ "$input" = "$eight" ] && [ "$d2" = "false" ] && moves2="$(($moves2+1))" && last2=$position2 && position2=$(($position2-${splice})) && keypressed="true"
-	[ "$input" = "$four" ] && [ "$d2" = "false" ] && moves2="$(($moves2+1))" && last2=$position2 && position2=$(($position2-1)) && keypressed="true"
-	[ "$input" = "$two" ] && [ "$d2" = "false" ] && moves2="$(($moves2+1))" && last2=$position2 && position2=$(($position2+${splice})) && keypressed="true"
-	[ "$input" = "$six" ] && [ "$d2" = "false" ] && moves2="$(($moves2+1))" && last2=$position2 && position2=$(($position2+1)) && keypressed="true"
-	[ "$input" = "$one" ] && [ "$d2" = "false" ] && shoots2="$(($shoots2+1))" && shootpos=$(($position2-1)) && shoot -1 && keypressed="true"
-	[ "$input" = "$three" ] && [ "$d2" = "false" ] && shoots2="$(($shoots2+1))" && shootpos=$(($position2+1)) && shoot 1 && keypressed="true"
-	[ "$input" = "$e" ] && [ "$canskip" = "true" ] && exit
-	[ "$input" = "$m" ] && [ "$dev" = "true" ] && clear && dev="false" && return
-	[ "$input" = "$m" ] && [ "$me" = "Developer" ] && [ "$dev" = "false" ] && dev="true"
-	[ "$input" = "+" ] && [ "$dev" = "true" ] && clear && echo "Resizing..." && splice="$(($splice+1))"
-	[ "$input" = "-" ] && [ "$dev" = "true" ] && clear && echo "Resizing..." && splice="$(($splice-1))"
-	[ "$input" = "*" ] && [ "$dev" = "true" ] && clear && echo "Redrawing..."
+	# read -s -n4 input 2>/dev/null >&2
+	while [ "$input" = "" ]; do read -t0.01 -rsn4 input; done
+    [[ "$input" == *"$w"* ]] && [ "$d1" = "false" ] && moves="$(($moves+1))" && last=$position && position=$(($position-${splice})) && keypressed="true"
+    [[ "$input" == *"$s"* ]] && [ "$d1" = "false" ] && moves="$(($moves+1))" && last=$position && position=$(($position+${splice})) && keypressed="true"
+    [[ "$input" == *"$d"* ]] && [ "$d1" = "false" ] && moves="$(($moves+1))" && last=$position && position=$(($position+1)) && keypressed="true"
+    [[ "$input" == *"$a"* ]] && [ "$d1" = "false" ] && moves="$(($moves+1))" && last=$position && position=$(($position-1)) && keypressed="true"
+    [[ "$input" == *"$cl"* ]] && [ "$d1" = "false" ] && shoots="$(($shoots+1))" && shootpos=$(($position-1)) && shoot -1 && keypressed="true"
+    [[ "$input" == *"$v"* ]] && [ "$d1" = "false" ] && shoots="$(($shoots+1))" && shootpos=$(($position+1)) && shoot 1 && keypressed="true"
+    [[ "$input" == *"$eight"* ]] && [ "$d2" = "false" ] && moves2="$(($moves2+1))" && last2=$position2 && position2=$(($position2-${splice})) && keypressed="true"
+    [[ "$input" == *"$four"* ]] && [ "$d2" = "false" ] && moves2="$(($moves2+1))" && last2=$position2 && position2=$(($position2-1)) && keypressed="true"
+    [[ "$input" == *"$two"* ]] && [ "$d2" = "false" ] && moves2="$(($moves2+1))" && last2=$position2 && position2=$(($position2+${splice})) && keypressed="true"
+    [[ "$input" == *"$six"* ]] && [ "$d2" = "false" ] && moves2="$(($moves2+1))" && last2=$position2 && position2=$(($position2+1)) && keypressed="true"
+    [[ "$input" == *"$one"* ]] && [ "$d2" = "false" ] && shoots2="$(($shoots2+1))" && shootpos=$(($position2-1)) && shoot -1 && keypressed="true"
+    [[ "$input" == *"$three"* ]] && [ "$d2" = "false" ] && shoots2="$(($shoots2+1))" && shootpos=$(($position2+1)) && shoot 1 && keypressed="true"
+	[[ "$input" == *"$e"* ]] && [ "$canskip" = "true" ] && exit
+	[[ "$input" == *"$m"* ]] && [ "$dev" = "true" ] && clear && dev="false" && return
+	[[ "$input" == *"$m"* ]] && [ "$me" = "Developer" ] && [ "$dev" = "false" ] && dev="true"
+	[[ "$input" == *"+"* ]] && [ "$dev" = "true" ] && clear && echo "Resizing..." && splice="$(($splice+1))"
+	[[ "$input" == *"-"* ]] && [ "$dev" = "true" ] && clear && echo "Resizing..." && splice="$(($splice-1))"
+	[[ "$input" == *"*"* ]] && [ "$dev" = "true" ] && clear && echo "Redrawing..."
 }
 
 

@@ -17,6 +17,7 @@ Movement Bash uses a simple menu navigation system.
         4. Help
         5. Extras
         6. Exit
+        7. Exit and close xterm
         
         If we want to go to the options menu, we press the [2] key.
 
@@ -95,19 +96,21 @@ Movement Bash uses a simple menu navigation system.
 	1. Start
 		---Standard maps---
 		
-		0-5
+		0-4
 
 		Allows you to load built-in sample maps. You can
 		press 0 on your keyboard to play all of the
 		standard maps.
 
+		---Other maps---
+		
 		6. Custom map
 
 		Allows you to load a map that exist in the same
 		directory as the bash script. Maps don't have a
 		file extension and contain 2 lines of plain text.
 
-		7. Map pack
+		7. Custom map pack
 
 		Similar to how Movement Batch worked, map packs are
 		like playlists for maps. In Movement Bash, map packs
@@ -116,7 +119,19 @@ Movement Bash uses a simple menu navigation system.
 		all maps and/or skip the ones that can't be finished.
 		You can do so, by pressing E.
 		
-		8. Go back
+		---Misc---
+		
+		8. Random map
+		
+		Loads a random map from the maps/ directory. This
+		will not load any of the sample maps. Useful, if
+		you're not sure which map you want to play.
+		
+		If you want	to load maps that you randomly
+		generated, please use the "Custom map" menu
+		option.
+		
+		9. Go back
 		
 		Returns to the previous menu
 
@@ -130,29 +145,31 @@ Movement Bash uses a simple menu navigation system.
 		you make. See signature formatting under 'Help'
 		for more information.
 
-		2. Change your character: [your character]
+		2. Change characters: [your character] [opponent's character]
 		
-		Allows you to change your character. By default,
-		this is set to @, but you can type any other
-		character you want to use.
+		Allows you to change the characters used by the game.
+		By default, the characters will be @ for player 1 and
+		# for player 2, but you can change these to your liking.
 
-		3. Change opponent's character: [opponent's character]
-		
-		Same as option 2, but for the second player. The
-		default here is #.
-
-		4. Shooting distance
+		3. Shooting distance
 		
 		Set how many blocks can a bullet be fired by. Default
 		is 5.
 
-		5. ASCII mode: enabled/disabled
+		4. ASCII mode: enabled/disabled
 
 		If enabled, only ASCII characters are used in maps.
 		Useful, if your terminal emulator doesn't properly
 		support Unicode characters or if the map designer
 		decided this is the mode they'd want to use.
 
+		5. Screen update mode: No flicker/Clear command
+		
+		This specifies how the game refreshes the contents
+		of the screen. No flicker works for most cases, but
+		the clear command can provide a cleaner output, at
+		the cost of constant flickering.
+		
 		6. Multiplayer mode: enabled/disabled
 		
 		If enabled, 2 characters will be controllable on
@@ -180,8 +197,8 @@ Movement Bash uses a simple menu navigation system.
 		
 		Allows you to create new maps that you can load later.
 
-        2. Create a map pack
-	
+        2. Create or edit a map pack
+
 		This allows you to create a new map pack or load an
 		existing one.
 
@@ -202,10 +219,15 @@ Movement Bash uses a simple menu navigation system.
 
         6. Delete map pack
         
-        Allows you to delete an ecisting map pack. Will
+        Allows you to delete an existing map pack. Will
         NOT delete any maps contained in the map pack.
 
-        7. Go back
+        7. Clone a sample map
+        
+        Allows you to make a new map that uses one of
+        the sample maps as the template.
+
+        8. Go back
         
         Returns to the previous menu.
 		
@@ -232,5 +254,13 @@ Movement Bash uses a simple menu navigation system.
 
 	6. Exit
 
-		Ends the script.		
+		Ends the script. If you launched the script from the command
+		line, you'll return back to the command line.
 
+    7. Exit and close [terminal emulator]
+
+        Ends the script and attempts to close the terminal emulator.
+        If you are running Movement Bash through SSH, this option
+        will disconnect you from the host. If you are running this
+        script directly through tty or systemd, this option will
+        not be available.

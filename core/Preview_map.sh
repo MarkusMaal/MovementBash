@@ -1,4 +1,3 @@
- #!/bin/bash
  #
  # Map preview utility
  #

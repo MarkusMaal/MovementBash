@@ -1,4 +1,3 @@
-#!/bin/bash
 #
 # Movement Bash
 #

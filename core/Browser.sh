@@ -1,4 +1,3 @@
-#!/bin/bash
 declare -a maps_array
 for a in $(ls -1 $1); do
 	maps_array+=("${a}")
@@ -9,7 +8,8 @@ select="-1"
 while true; do
 	clear
 	echo
-	echo "Available $1"
+	[[ "$1" == */* ]] && echo "Available templates"
+	[[ "$1" == */* ]] || echo "Available $1"
 	echo
 	id=1
 	for i in "${maps_array[@]}"; do
