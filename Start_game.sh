@@ -800,7 +800,7 @@ ChooseSplash() {
     [ $rng = "42" ] && splash="This bash file is HUUUGEE" || zz="ss "
     [ $rng = "43" ] && splash="Nice to meet you"
     [ $rng = "44" ] && splash="I'm not a robot"
-    [ $rng = "45" ] && splash="Also check out \e[1m#\e[2m\e[36mmarkusTegelane\e[0m\e[37m"
+    [ $rng = "45" ] && splash="Also check out \e[1#\e[2m\e[36MmarkusTegelane++\e[0m\e[37m"
     [ $rng = "46" ] && Timesplash
     [ $rng = "47" ] && splash="Your computer is using the \e[1m$(uname)\e[0m kernel"
     [ $rng = "48" ] && splash="Did you even look at the options menu" && quest="?"
