@@ -19,3 +19,4 @@ For instructions, please refer to files available in the help directory or using
 * Haiku - requires enabling ASCII mode and manually setting controls
 * Gobo Linux - requires custom shabang, added by me to Start_game.sh
 * TinyCore - requires custom shabang, added by me to Start_game.sh
+* macOS Sonoma - editor only works in ASCII mode, broken ANSI sequences and timeout errors while playing a map
